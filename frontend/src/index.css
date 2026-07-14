@@ -1,0 +1,469 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #070a13;
+  --bg-secondary: #0d1326;
+  --bg-tertiary: #141c36;
+  --border-color: #1e294b;
+  --border-glow: rgba(56, 189, 248, 0.15);
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  --color-compressor: #06b6d4;
+  --color-combustor: #f59e0b;
+  --color-turbine: #d946ef;
+  
+  --status-green: #10b981;
+  --status-amber: #f59e0b;
+  --status-red: #ef4444;
+  
+  font-family: 'Outfit', sans-serif;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(217, 70, 239, 0.05) 0px, transparent 50%);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Animations */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.2), inset 0 0 10px rgba(6, 182, 212, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.4), inset 0 0 15px rgba(6, 182, 212, 0.2);
+  }
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+/* Cockpit HUD layout styling */
+.hud-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header */
+.hud-header {
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hud-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-compressor), var(--color-combustor), var(--color-turbine));
+}
+
+.hud-title-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.hud-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, #38bdf8, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+.hud-subtitle {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--text-secondary);
+  border-left: 2px solid var(--color-compressor);
+  padding-left: 0.75rem;
+}
+
+.hud-nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.hud-nav-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  padding: 0.5rem 1.25rem;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hud-nav-btn.active {
+  background-color: rgba(56, 189, 248, 0.1);
+  border-color: var(--color-compressor);
+  color: var(--text-primary);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+}
+
+.hud-nav-btn:hover:not(.active) {
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+/* Dashboard Control Center */
+.control-bar {
+  background-color: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.75rem 2rem;
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.control-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+}
+
+.control-select {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  outline: none;
+  font-family: 'Orbitron', sans-serif;
+  cursor: pointer;
+}
+
+.control-select:focus {
+  border-color: var(--color-compressor);
+  box-shadow: 0 0 5px rgba(6, 182, 212, 0.3);
+}
+
+.scrubber-container {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.scrubber-slider {
+  flex-grow: 1;
+  height: 6px;
+  border-radius: 3px;
+  outline: none;
+  background: var(--bg-tertiary);
+  cursor: pointer;
+}
+
+/* Dashboard Grid Layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.25rem;
+  padding: 1.5rem 2rem;
+}
+
+/* Glassmorphic Panel Cards */
+.hud-panel {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+
+.hud-panel:hover {
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.hud-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.hud-panel-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-secondary);
+}
+
+/* Circular Overall Health Gauge */
+.overall-gauge-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+}
+
+.overall-gauge-svg {
+  width: 150px;
+  height: 150px;
+  transform: rotate(-90deg);
+}
+
+.overall-gauge-bg {
+  fill: none;
+  stroke: var(--bg-tertiary);
+  stroke-width: 10;
+}
+
+.overall-gauge-value {
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.5s ease;
+}
+
+.overall-gauge-text {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  fill: var(--text-primary);
+}
+
+/* Subsystem Health bars */
+.subsystem-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.subsystem-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.subsystem-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.subsystem-name {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.subsystem-bar-bg {
+  height: 8px;
+  background-color: var(--bg-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.subsystem-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* Operating conditions value display */
+.sensor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.sensor-card {
+  background-color: var(--bg-tertiary);
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.sensor-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sensor-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.sensor-unit {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-left: 0.25rem;
+}
+
+/* Thrust / Performance Display */
+.performance-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem 0;
+}
+
+.performance-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--color-compressor);
+  text-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+}
+
+.performance-range {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Tab Layout views */
+.tab-content {
+  flex-grow: 1;
+}
+
+/* What-If Prediction Form */
+.whatif-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 2rem;
+}
+
+.whatif-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.form-input {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  font-family: 'Orbitron', sans-serif;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: var(--color-compressor);
+}
+
+.submit-btn {
+  background: linear-gradient(135deg, var(--color-compressor), #3b82f6);
+  border: none;
+  color: #fff;
+  padding: 0.75rem 2rem;
+  border-radius: 4px;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.submit-btn:hover {
+  box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+  transform: translateY(-1px);
+}
+
+.whatif-results-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Metrics Table */
+.metrics-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.metrics-table th, .metrics-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.metrics-table th {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.metrics-table tr:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}

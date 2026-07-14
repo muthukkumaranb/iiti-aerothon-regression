@@ -4,3 +4,4 @@ __pycache__/
 results.zip
 *.png
 .DS_Store
+test_env/
