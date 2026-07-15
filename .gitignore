@@ -1,6 +1,8 @@
 venv/
+.venv/
 __pycache__/
 *.pyc
 results.zip
 *.png
 .DS_Store
+test_env/

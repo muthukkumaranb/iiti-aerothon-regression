@@ -1,52 +1,151 @@
-# Turbojet Engine Degradation Analysis
+# HoloTwin: Physics-Informed Digital Twin Platform
+### (Aerothon 2026 · HAL x IIT Indore)
 
-This repository contains a Python script and associated resources for analyzing a turbojet engine dataset (`turbojet_complete_dataset.csv`). It performs exploratory data analysis, visualizes correlations and degradation trends, and establishes a baseline linear regression model to predict the engine pressure ratio (P2 Ratio).
+HoloTwin is a **Physics-Informed Digital Twin Platform** designed for a single-spool, four-stage turbojet engine. Built as a full-stack web application, it integrates physical gas-turbine constraints with machine learning surrogate models to predict component-level degradation (Compressor, Combustor, Turbine, and Overall Health) and forecast real-time engine performance parameters (Thrust, TSFC) with built-in uncertainty quantification.
 
-## Files in the Repository
+---
 
-- `analysis.py`: The main Python script that performs data loading, processing, visualization, and modeling.
-- `requirements.txt`: List of dependencies needed to run the analysis.
-- `Dataset/`: Directory containing the turbojet dataset.
-- Generated plots (output by the script):
-  - `correlation_matrix.png`: Heatmap of selected features to understand linear correlations.
-  - `degradation_trend.png`: A plot showing the P2 ratio degradation trend over engine cycles for the engine with the widest cycle range.
-  - `baseline_scatter.png`: Scatter plot comparing the actual vs predicted P2 ratio using the baseline linear regression model.
-- `results.zip`: A zip archive containing all generated plots.
+## 🛠️ Architecture Overview
 
-## Setup Instructions
+The codebase is organized into a decoupled full-stack architecture:
 
-1. **Clone the repository:**
-   ```bash
-   git clone <repository_url>
-   cd iiti-aerothon
-   ```
+```
+iiti-aerothon-regression/
+├── holotwin/                # Backend Django Project
+│   ├── manage.py
+│   ├── holotwin/            # Core settings & routing configuration
+│   ├── engine_data/         # Data ingestion, DB schema definitions
+│   ├── digitaltwin/         # Physics feature engineering & ML pipelines
+│   └── api/                 # REST API endpoints & serializers
+├── frontend/                # Frontend Vite + React SPA dashboard
+│   ├── src/
+│   │   ├── components/      # UI components (HUD panels, Gauges, Charts)
+│   │   ├── App.jsx          # Main application cockpit view
+│   │   ├── index.css        # Space-cockpit HUD design system
+│   │   └── main.jsx         # App entry point
+│   ├── package.json
+│   └── vite.config.js
+├── docs/
+│   └── technical_report_outline.md  # Mapping criteria to implementation
+├── Dataset/                 # Raw and split datasets
+├── results.zip              # Package of all generated plots
+├── correlation_matrix.png   # Generated heatmap plot
+├── degradation_trend.png    # Generated degradation trend plot
+├── baseline_scatter.png     # Generated baseline P2 regression plot
+└── health_estimation_scatter.png # Generated twin OverallHealth scatter plot
+```
 
-2. **Create a virtual environment (optional but recommended):**
-   ```bash
-   python -m venv venv
-   # On Windows
-   venv\Scripts\activate
-   # On macOS/Linux
-   source venv/bin/activate
-   ```
+---
 
-3. **Install the dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+## 🚀 Getting Started
 
-4. **Run the analysis script:**
-   Ensure the `Dataset/turbojet_complete_dataset.csv` is present.
-   ```bash
-   python analysis.py
-   ```
+### 1. Prerequisites
+Ensure you have the following installed on your system:
+- **Python 3.11+**
+- **Node.js v20+** and **npm**
 
-## Key Findings & Outputs
+---
 
-Running the script will print statistics to the console, including:
-- Number of unique engines.
-- Engine cycle statistics.
-- Altitude and Mach number ranges.
-- A final summary with the baseline model's Mean Absolute Percentage Error (MAPE) and Root Mean Squared Error (RMSE).
+### 2. Django Backend Setup
 
-Three PNG plots are also generated and zipped into `results.zip`.
+Navigate to the backend directory:
+```bash
+cd holotwin
+```
+
+Install the required Python packages (with system override if required by PEP 668):
+```bash
+pip install django djangorestframework django-cors-headers joblib scikit-learn pandas numpy matplotlib seaborn --break-system-packages
+```
+
+Run database migrations to initialize the SQLite database:
+```bash
+python3 manage.py makemigrations engine_data
+python3 manage.py migrate
+```
+
+Load the complete turbojet dataset from the CSV file into the database:
+```bash
+python3 manage.py load_dataset
+```
+
+Train the digital twin ML surrogate models (including Cascade pipelines and Quantile bounds):
+```bash
+python3 manage.py train_models
+```
+
+Start the Django REST API server:
+```bash
+python3 manage.py runserver
+```
+The API will be available at `http://127.0.0.1:8000/`.
+
+---
+
+### 3. React Frontend Setup
+
+Navigate to the frontend directory:
+```bash
+cd ../frontend
+```
+
+Install npm dependencies:
+```bash
+npm install
+```
+
+Start the Vite React development server:
+```bash
+npm run dev
+```
+Open your browser and navigate to `http://localhost:5173/` to view the interactive cockpit interface.
+
+To build the client for production:
+```bash
+npm run build
+```
+
+---
+
+## 🧪 Running Automated Tests
+
+A comprehensive test suite is provided to verify both feature engineering and API routing.
+
+Run the test suite using Django's test runner:
+```bash
+cd holotwin
+python3 manage.py test
+```
+
+---
+
+## 📊 Reproducing Plots & Results
+
+You can regenerate the correlation heatmap, the degradation line graph, the linear baseline regression plot, and the health estimation accuracy scatter plot with a single command:
+
+```bash
+python3 manage.py generate_plots
+```
+This command regenerates the plots and zips them into `/results.zip` in the project root.
+
+---
+
+## 🔌 API Endpoints Reference
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/api/engines/` | `GET` | List all engines, their latest operating cycle, and overall health index. |
+| `/api/engines/{id}/history/` | `GET` | Retrieve full cycle-by-cycle sensor readings, derived features, and predictions. |
+| `/api/engines/{id}/latest/` | `GET` | Get a snapshot of the latest cycle, degradation slope, and 5-cycle extrapolation. |
+| `/api/predict/` | `POST` | Input custom sensor values to get instant digital twin predictions. |
+| `/api/model-metrics/` | `GET` | Fetch RMSE, MAE, R², MAPE, latencies, and feature importances for all models. |
+
+---
+
+## 📝 Key Code References
+
+- **ORM Schema**: [engine_data/models.py](file:///home/cygnusvale/coding/projects/iiti-aerothon-regression/holotwin/engine_data/models.py)
+- **Physics Formulas**: [digitaltwin/features.py](file:///home/cygnusvale/coding/projects/iiti-aerothon-regression/holotwin/digitaltwin/features.py)
+- **Inference Cascade**: [digitaltwin/models_ml.py](file:///home/cygnusvale/coding/projects/iiti-aerothon-regression/holotwin/digitaltwin/models_ml.py)
+- **REST Endpoints**: [api/views.py](file:///home/cygnusvale/coding/projects/iiti-aerothon-regression/holotwin/api/views.py)
+- **HUD Interface**: [frontend/src/App.jsx](file:///home/cygnusvale/coding/projects/iiti-aerothon-regression/frontend/src/App.jsx)

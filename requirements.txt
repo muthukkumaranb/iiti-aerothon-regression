@@ -3,3 +3,7 @@ numpy
 matplotlib
 seaborn
 scikit-learn
+django
+djangorestframework
+django-cors-headers
+joblib
