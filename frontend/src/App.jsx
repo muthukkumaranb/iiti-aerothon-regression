@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine,
   BarChart, Bar
 } from 'recharts';
-import { 
-  Activity, Gauge, Cpu, BarChart3, Settings, Play, RefreshCw, AlertTriangle, ShieldCheck 
+import {
+  Activity, Gauge, Cpu, BarChart3, Settings, Play, RefreshCw, AlertTriangle, ShieldCheck, Box
 } from 'lucide-react';
 
 const API_BASE = 'http://localhost:8000/api';
@@ -65,7 +65,7 @@ function App() {
   // Fetch engine history and latest data when selected engine changes
   useEffect(() => {
     if (!selectedEngineId) return;
-    
+
     async function fetchEngineData() {
       setLoading(true);
       try {
@@ -162,21 +162,21 @@ function App() {
             <div className="hud-subtitle">Physics-Informed Digital Twin</div>
           </div>
         </div>
-        
+
         <nav className="hud-nav">
-          <button 
+          <button
             className={`hud-nav-btn ${activeTab === 'cockpit' ? 'active' : ''}`}
             onClick={() => setActiveTab('cockpit')}
           >
             Cockpit HUD
           </button>
-          <button 
+          <button
             className={`hud-nav-btn ${activeTab === 'whatif' ? 'active' : ''}`}
             onClick={() => setActiveTab('whatif')}
           >
             What-If Simulator
           </button>
-          <button 
+          <button
             className={`hud-nav-btn ${activeTab === 'metrics' ? 'active' : ''}`}
             onClick={() => setActiveTab('metrics')}
           >
@@ -201,11 +201,11 @@ function App() {
 
           <div className="scrubber-container">
             <span className="control-label">Timeline Scrubber:</span>
-            <input 
-              type="range" 
-              min={1} 
-              max={latestData.cycle} 
-              value={selectedCycle} 
+            <input
+              type="range"
+              min={1}
+              max={latestData.cycle}
+              value={selectedCycle}
               onChange={(e) => setSelectedCycle(parseInt(e.target.value))}
               className="scrubber-slider"
               style={{
@@ -230,7 +230,7 @@ function App() {
           ) : (
             currentCycleRecord && (
               <div className="dashboard-grid">
-                
+
                 {/* 1. Overall Health Index Gauge */}
                 <section className="hud-panel" style={{ gridColumn: 'span 4', height: '270px' }}>
                   <h3 className="hud-panel-title">
@@ -240,11 +240,11 @@ function App() {
                   <div className="overall-gauge-container">
                     <svg className="overall-gauge-svg">
                       <circle className="overall-gauge-bg" cx="75" cy="75" r="60" />
-                      <circle 
-                        className="overall-gauge-value" 
-                        cx="75" 
-                        cy="75" 
-                        r="60" 
+                      <circle
+                        className="overall-gauge-value"
+                        cx="75"
+                        cy="75"
+                        r="60"
                         stroke={getHealthColor(currentCycleRecord.predicted_health.overall)}
                         strokeDasharray={`${2 * Math.PI * 60}`}
                         strokeDashoffset={`${2 * Math.PI * 60 * (1 - currentCycleRecord.predicted_health.overall)}`}
@@ -276,9 +276,9 @@ function App() {
                         <span>{(currentCycleRecord.predicted_health.compressor * 100).toFixed(1)}%</span>
                       </div>
                       <div className="subsystem-bar-bg">
-                        <div 
-                          className="subsystem-bar-fill" 
-                          style={{ 
+                        <div
+                          className="subsystem-bar-fill"
+                          style={{
                             width: `${currentCycleRecord.predicted_health.compressor * 100}%`,
                             backgroundColor: getHealthColor(currentCycleRecord.predicted_health.compressor)
                           }}
@@ -295,9 +295,9 @@ function App() {
                         <span>{(currentCycleRecord.predicted_health.combustor * 100).toFixed(1)}%</span>
                       </div>
                       <div className="subsystem-bar-bg">
-                        <div 
-                          className="subsystem-bar-fill" 
-                          style={{ 
+                        <div
+                          className="subsystem-bar-fill"
+                          style={{
                             width: `${currentCycleRecord.predicted_health.combustor * 100}%`,
                             backgroundColor: getHealthColor(currentCycleRecord.predicted_health.combustor)
                           }}
@@ -314,9 +314,9 @@ function App() {
                         <span>{(currentCycleRecord.predicted_health.turbine * 100).toFixed(1)}%</span>
                       </div>
                       <div className="subsystem-bar-bg">
-                        <div 
-                          className="subsystem-bar-fill" 
-                          style={{ 
+                        <div
+                          className="subsystem-bar-fill"
+                          style={{
                             width: `${currentCycleRecord.predicted_health.turbine * 100}%`,
                             backgroundColor: getHealthColor(currentCycleRecord.predicted_health.turbine)
                           }}
@@ -354,13 +354,37 @@ function App() {
                   </div>
                 </section>
 
+                {/* 3D Digital Twin Model Panel */}
+                <section className="hud-panel" style={{ gridColumn: 'span 7', height: '380px', display: 'flex', flexDirection: 'column' }}>
+                  <h3 className="hud-panel-title">
+                    <span>Interactive 3D Engine Model</span>
+                    <Box size={16} />
+                  </h3>
+                  <div style={{ flexGrow: 1, width: '100%', position: 'relative', borderRadius: '6px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+                    <iframe
+                      title="Turbojet Engine Demonstration"
+                      frameBorder="0"
+                      allowFullScreen
+                      mozallowfullscreen="true"
+                      webkitallowfullscreen="true"
+                      allow="autoplay; fullscreen; xr-spatial-tracking"
+                      xr-spatial-tracking="true"
+                      execution-while-out-of-viewport="true"
+                      execution-while-not-rendered="true"
+                      web-share="true"
+                      src="https://sketchfab.com/models/dc1621a57fc744fba9f5506225dbfe90/embed?autostart=1&preload=1&ui_theme=dark&ui_hint=0&ui_infos=0"
+                      style={{ width: '100%', height: '100%', border: 'none' }}
+                    />
+                  </div>
+                </section>
+
                 {/* 4. Operating Conditions Panel */}
-                <section className="hud-panel" style={{ gridColumn: 'span 5' }}>
+                <section className="hud-panel" style={{ gridColumn: 'span 5', height: '380px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <h3 className="hud-panel-title">
                     <span>Operating Conditions & Raw Sensors</span>
                     <Settings size={16} />
                   </h3>
-                  <div className="sensor-grid">
+                  <div className="sensor-grid" style={{ flexGrow: 1, alignContent: 'center' }}>
                     <div className="sensor-card">
                       <div className="sensor-label">Altitude</div>
                       <div className="sensor-value">
@@ -407,12 +431,12 @@ function App() {
                 </section>
 
                 {/* 5. Historical & Extrapolation Chart */}
-                <section className="hud-panel" style={{ gridColumn: 'span 7' }}>
+                <section className="hud-panel" style={{ gridColumn: 'span 12' }}>
                   <h3 className="hud-panel-title">
                     <span>Engine Health Degradation & Projected Trend</span>
                     <BarChart3 size={16} />
                   </h3>
-                  <div style={{ width: '100%', height: '220px' }}>
+                  <div style={{ width: '100%', height: '260px' }}>
                     <ResponsiveContainer>
                       <LineChart data={chartData} margin={{ top: 5, right: 30, left: 10, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" />
@@ -420,17 +444,17 @@ function App() {
                         <YAxis domain={[0.6, 1.05]} stroke="var(--text-secondary)" />
                         <Tooltip contentStyle={{ backgroundColor: 'var(--bg-secondary)', borderColor: 'var(--border-color)' }} />
                         <Legend verticalAlign="top" height={36} />
-                        
+
                         <Line type="monotone" dataKey="OverallHealth" name="True Overall Health" stroke="var(--status-green)" strokeWidth={2} dot={false} activeDot={{ r: 6 }} />
                         <Line type="monotone" dataKey="PredictedOverallHealth" name="Predicted Health" stroke="var(--color-compressor)" strokeWidth={2} dot={false} />
                         <Line type="monotone" dataKey="ProjectedOverallHealth" name="Projected Health (Extrapolated)" stroke="var(--status-red)" strokeWidth={2} strokeDasharray="5 5" dot={false} />
-                        
+
                         <ReferenceLine x={selectedCycle} stroke="var(--text-muted)" label={`Cycle ${selectedCycle}`} strokeDasharray="3 3" />
                       </LineChart>
                     </ResponsiveContainer>
                   </div>
                 </section>
-                
+
               </div>
             )
           )
@@ -449,12 +473,12 @@ function App() {
                   {Object.keys(whatIfInputs).map((key) => (
                     <div className="form-group" key={key}>
                       <label className="form-label">{key.replace('_', ' ').toUpperCase()}</label>
-                      <input 
-                        type="number" 
+                      <input
+                        type="number"
                         step="any"
-                        value={whatIfInputs[key]} 
+                        value={whatIfInputs[key]}
                         onChange={(e) => setWhatIfInputs({ ...whatIfInputs, [key]: parseFloat(e.target.value) })}
-                        className="form-input" 
+                        className="form-input"
                         required
                       />
                     </div>
@@ -470,7 +494,7 @@ function App() {
                   <h4 style={{ fontFamily: 'Orbitron', fontSize: '1rem', marginBottom: '1.5rem', color: 'var(--color-compressor)' }}>
                     Simulation Outputs (Digital Twin Cascade Results)
                   </h4>
-                  
+
                   <div className="whatif-results-grid">
                     <div className="sensor-card">
                       <div className="sensor-label">Compressor Health</div>
@@ -525,7 +549,7 @@ function App() {
         {activeTab === 'metrics' && modelMetrics && (
           <div className="whatif-container" style={{ maxWidth: '1100px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '1.5rem' }}>
-              
+
               {/* Models Summary Table */}
               <section className="hud-panel" style={{ gridColumn: 'span 12' }}>
                 <h3 className="hud-panel-title">Model Generalization & Validation Metrics (Held-Out Engine 10)</h3>
@@ -545,8 +569,8 @@ function App() {
                     {Object.keys(modelMetrics).map((modelKey) => {
                       const model = modelMetrics[modelKey];
                       return (
-                        <tr 
-                          key={modelKey} 
+                        <tr
+                          key={modelKey}
                           style={{ cursor: 'pointer', backgroundColor: selectedMetricModel === modelKey ? 'rgba(56, 189, 248, 0.05)' : '' }}
                           onClick={() => setSelectedMetricModel(modelKey)}
                         >
@@ -577,7 +601,7 @@ function App() {
                   </h3>
                   <div style={{ width: '100%', height: '300px' }}>
                     <ResponsiveContainer>
-                      <BarChart 
+                      <BarChart
                         layout="vertical"
                         data={
                           Object.entries(modelMetrics[selectedMetricModel].feature_importances)
