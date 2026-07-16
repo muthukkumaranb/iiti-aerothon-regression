@@ -4,7 +4,10 @@
 HoloTwin is a **Physics-Informed Digital Twin Platform** designed for a single-spool, four-stage turbojet engine. Built as a full-stack web application, it integrates physical gas-turbine constraints with machine learning surrogate models to predict component-level degradation (Compressor, Combustor, Turbine, and Overall Health) and forecast real-time engine performance parameters (Thrust, TSFC) with built-in uncertainty quantification.
 
 ---
-
+## AI/ML Component — PINN Surrogate Model
+This project integrates a Physics-Informed Neural Network (PINN) surrogate model for [brief description of what it predicts/does].
+Model repo: https://github.com/muthukkumaranb/HoloTwin-AeroThon
+Also embedded in this repo as a submodule at `ml-service/` (see below).
 ## 🛠️ Architecture Overview
 
 The codebase is organized into a decoupled full-stack architecture:
